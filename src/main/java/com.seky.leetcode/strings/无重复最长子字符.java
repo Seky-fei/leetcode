@@ -9,6 +9,20 @@ public class 无重复最长子字符 {
 
 
     public int lengthOfLongestSubstring(String s) {
+        if(s == null || s.length() == 0){
+            return s == null ? 0 : 1;
+        }
+        int a, b, len;
+        
+        
+        char[] chars = s.toCharArray();
+
+        for(int i = 0; i < s.length(); i++){
+            
+            
+            
+        }
+        
         
         
         
