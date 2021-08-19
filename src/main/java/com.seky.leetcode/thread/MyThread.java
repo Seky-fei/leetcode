@@ -1,5 +1,7 @@
 package com.seky.leetcode.thread;
 
+import com.seky.leetcode.entry.Node;
+
 /**
  * @author: wf
  * @create: 2021/6/10 13:48
@@ -30,24 +32,45 @@ public class MyThread extends Thread{
     }
     
     public static void main(String[] args) throws Exception {
-        StringBuilder builder = new StringBuilder();
-        //StringBuilder常用方法
-        builder.append("来BC");
-        System.out.println("1111  " + builder.toString());
+        Node tail = null, head = null;
+        for (int i = 1; i <= 5; i++){
+            Node next = new Node();
+            next.val = i;
+            if(tail == null){
+                head = next;
+                tail = next;
+            }else {
+                tail.next = next;
+                tail = next;
+            }
+        }
         
-        builder.appendCodePoint(64); //在末尾追加一个codePoint(参数是ASCII码对应的 整数)
-        System.out.println("2222  " + builder.toString());
+        Node temp = head;
+        while (temp != null){
+            System.out.print(temp.val + ",");
+            temp = temp.next;
+        }
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        //数据
+        Node h = null, q = null;
+        Node p = head;
+        while(p != null){
+            q = p.next;
+            p.next = h;
+            h = p;
+            p = q;
+        }
+        while (h != null){
+            System.out.print(h.val + ",");
+            h = h.next;
+        }
+    }
+    
+    public Node coverLinkedList(Node node, int begin, int end){
         
-        builder.setCharAt(1, 'A');
-        System.out.println("3333  " + builder.toString());
-    
-        builder.insert(1, 'B'); //insert(int offset, Char c)：在指定位置之前插入字符(串)
-        System.out.println("4444  " + builder.toString());
-    
-    
-        builder.delete(1, 2); //删除起始位置（含）到结尾位置（不含）之间的字符串
-        System.out.println("5555  " + builder.toString());
         
-        System.out.println(builder.charAt(0));
+        return null;
     }
 }

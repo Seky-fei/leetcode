@@ -50,6 +50,7 @@ public class 数组最大不连续递增子序列 {
      * @param n
      * @return
      */
+    //一维数组保存子问题最优解
     private int[] temp = new int[10];
     public int findMaxSkipSub2(int[] numbers, int n){
         if(n >= numbers.length-1){
