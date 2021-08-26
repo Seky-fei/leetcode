@@ -2,6 +2,8 @@ package com.seky.leetcode.thread;
 
 import com.seky.leetcode.entry.Node;
 
+import java.util.LinkedList;
+
 /**
  * @author: wf
  * @create: 2021/6/10 13:48
@@ -53,24 +55,40 @@ public class MyThread extends Thread{
         System.out.println();
         System.out.println();
         System.out.println();
-        //数据
-        Node h = null, q = null;
-        Node p = head;
-        while(p != null){
-            q = p.next;
-            p.next = h;
-            h = p;
-            p = q;
-        }
-        while (h != null){
-            System.out.print(h.val + ",");
-            h = h.next;
+        Node node = coverLinkedList(head, 2, 4);
+        while (node != null){
+            System.out.print(node.val + ",");
+            node = node.next;
         }
     }
     
-    public Node coverLinkedList(Node node, int begin, int end){
+    public static Node coverLinkedList(Node node, int n, int m){
+        Node head = new Node();
+        head.next = node;
+        Node pre = node;
+        int c = m - n;
         
+        while(pre.next != null && n-1 > 1){
+            pre = pre.next;
+            n--;
+        }
         
-        return null;
+        //指定区域反转
+        Node th = pre.next;
+        while(th.next != null && c >= 1){
+            Node temp = th.next;
+            th.next = temp.next;
+            temp.next = pre.next;
+            pre.next = temp;
+            c--;
+        }
+        return head.next;
+    }
+    
+    public void linkedList(){
+        LinkedList<Integer> linkedList = new LinkedList<>();
+        for(int item : linkedList){
+            System.out.println(item);
+        }
     }
 }

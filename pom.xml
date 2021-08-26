@@ -35,6 +35,12 @@
       <version>RELEASE</version>
       <scope>compile</scope>
     </dependency>
+    <!--工具包-->
+    <dependency>
+      <groupId>cn.hutool</groupId>
+      <artifactId>hutool-all</artifactId>
+      <version>5.4.2</version>
+    </dependency>
   </dependencies>
   
   <build>
