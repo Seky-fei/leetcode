@@ -2,12 +2,10 @@ package com.seky.leetcode.sorts;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
-
 /**
  * @author: feiwang_6
  * @create: 2020/9/16 22:24
- * @description:
+ * @description: 快速排序
  */
 public class QuickSort {
 
