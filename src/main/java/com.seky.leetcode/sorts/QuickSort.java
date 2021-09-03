@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 /**
  * @author: feiwang_6
  * @create: 2020/9/16 22:24
- * @description: 快速排序
+ * @description:
  */
 public class QuickSort {
 
