@@ -1,7 +1,6 @@
 package com.seky.leetcode;
 
-import java.security.PublicKey;
-import java.util.*;
+import java.util.LinkedList;
 
 /**
  * @author: wangfei
@@ -9,52 +8,31 @@ import java.util.*;
  * @description:
  */
 public class TestMain {
-    public static void main(String[] args) {
-        HashMap<Integer, Integer> map = new HashMap<>();
-        map.put(12, 1);
-        map.put(21, 2);
-        map.put(32, 3);
-        map.put(40, 4);
-        
-        //操作
-        map.put(3, 33);
-        Iterator<Integer> iterator = map.keySet().iterator();
-        while (iterator.hasNext())
-            System.out.print(iterator.next() + ", ");
+    public static final String a = "123";
+    public static final String b = "456";
     
-        System.out.println();
-        System.out.println("1111111111111111111111111111111111111111111111");
+    public static final String a1;
+    public static final String b1;
+    static {
+        a1 = "123";
+        b1 = "456";
+    }
+    
+    public static void main(String[] args) {
+        String string = "123456";
         
-        LinkedHashMap<Integer, Integer> linkedHashMap = new LinkedHashMap<>(15, 0.75f, true);
-        //LinkedHashMap<Integer, Integer> linkedHashMap = new LinkedHashMap<>(15, 0.75f, true);
-        linkedHashMap.put(11, 1);
-        linkedHashMap.put(21, 2);
-        linkedHashMap.put(31, 3);
-        linkedHashMap.put(41, 4);
-        linkedHashMap.put(51, 5);
-        linkedHashMap.put(61, 6);
-        linkedHashMap.put(71, 7);
+        String s1 = a + b;
+        String s2 = a1 + b1;
+        System.out.println("11111   " + (string == s1)); //true
+        System.out.println("22222   " + (string == s2)); //false
         
-        //操作
-        linkedHashMap.get(21);
-        Iterator<Integer> itera = linkedHashMap.keySet().iterator();
-        while (itera.hasNext())
-            System.out.print(itera.next() + ", ");
+        String w1 = "123";
+        String w2 = "456";
+        String w = w1 + w2;
+        System.out.println(string == w); //false
         
-        System.out.println();
-        System.out.println("1111111111111111111111111111111111111111111111111");
-        
-        LinkedHashMap<Integer, Integer> myMap = new MyLinkedHashMap<>();
-        myMap.put(11, 1);
-        myMap.put(21, 2);
-        myMap.put(31, 3);
-        myMap.put(41, 4);
-        myMap.put(51, 5);
-        myMap.put(61, 6);
-        myMap.put(71, 7);
-        Iterator<Integer> myIte = myMap.keySet().iterator();
-        while (myIte.hasNext())
-            System.out.print(myIte.next() + ", ");
-        
+        System.out.println("------------------------");
+        LinkedList<Integer> queue = new LinkedList<>();
+        queue.addAll(null);
     }
 }

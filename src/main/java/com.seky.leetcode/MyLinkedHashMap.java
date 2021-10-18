@@ -1,6 +1,5 @@
 package com.seky.leetcode;
 
-import java.util.Hashtable;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -26,9 +25,8 @@ public class MyLinkedHashMap<K, V> extends LinkedHashMap<K, V> {
     }
     
     public static void main(String[] args) {
-        Hashtable<Integer, Integer> map = new Hashtable<>();
-        map.put(null, 1);
-        map.put(null, 2);
-        System.out.println(map);
+        int len = 4;
+        System.out.println(18 % len);
+        System.out.println(18 & (len-1));
     }
 }
