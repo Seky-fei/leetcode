@@ -4,6 +4,9 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -112,5 +115,18 @@ public class 多个线程交替执行 {
             thread.start();
         }
         Thread.sleep(1000 * 30);
+    }
+    
+    @Test
+    public void testHandler() throws InterruptedException {
+        MyRejectedExecutionHandler handler = new MyRejectedExecutionHandler();
+        
+        ThreadPoolExecutor executor = new ThreadPoolExecutor(1, 1, 0, TimeUnit.SECONDS, new ArrayBlockingQueue<>(1), handler);
+        
+        executor.execute(new Sender("线程1", "11"));
+        executor.execute(new Sender("线程2", "22"));
+        executor.execute(new Sender("线程3", "33"));
+        
+        Thread.sleep(1000 * 10);
     }
 }
