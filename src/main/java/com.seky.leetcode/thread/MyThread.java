@@ -1,5 +1,9 @@
 package com.seky.leetcode.thread;
 
+import com.seky.leetcode.entry.Node;
+
+import java.util.LinkedList;
+
 /**
  * @author: wf
  * @create: 2021/6/10 13:48
@@ -30,24 +34,61 @@ public class MyThread extends Thread{
     }
     
     public static void main(String[] args) throws Exception {
-        StringBuilder builder = new StringBuilder();
-        //StringBuilder常用方法
-        builder.append("来BC");
-        System.out.println("1111  " + builder.toString());
+        Node tail = null, head = null;
+        for (int i = 1; i <= 5; i++){
+            Node next = new Node();
+            next.val = i;
+            if(tail == null){
+                head = next;
+                tail = next;
+            }else {
+                tail.next = next;
+                tail = next;
+            }
+        }
         
-        builder.appendCodePoint(64); //在末尾追加一个codePoint(参数是ASCII码对应的 整数)
-        System.out.println("2222  " + builder.toString());
+        Node temp = head;
+        while (temp != null){
+            System.out.print(temp.val + ",");
+            temp = temp.next;
+        }
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        Node node = coverLinkedList(head, 2, 4);
+        while (node != null){
+            System.out.print(node.val + ",");
+            node = node.next;
+        }
+    }
+    
+    public static Node coverLinkedList(Node node, int n, int m){
+        Node head = new Node();
+        head.next = node;
+        Node pre = node;
+        int c = m - n;
         
-        builder.setCharAt(1, 'A');
-        System.out.println("3333  " + builder.toString());
-    
-        builder.insert(1, 'B'); //insert(int offset, Char c)：在指定位置之前插入字符(串)
-        System.out.println("4444  " + builder.toString());
-    
-    
-        builder.delete(1, 2); //删除起始位置（含）到结尾位置（不含）之间的字符串
-        System.out.println("5555  " + builder.toString());
+        while(pre.next != null && n-1 > 1){
+            pre = pre.next;
+            n--;
+        }
         
-        System.out.println(builder.charAt(0));
+        //指定区域反转
+        Node th = pre.next;
+        while(th.next != null && c >= 1){
+            Node temp = th.next;
+            th.next = temp.next;
+            temp.next = pre.next;
+            pre.next = temp;
+            c--;
+        }
+        return head.next;
+    }
+    
+    public void linkedList(){
+        LinkedList<Integer> linkedList = new LinkedList<>();
+        for(int item : linkedList){
+            System.out.println(item);
+        }
     }
 }

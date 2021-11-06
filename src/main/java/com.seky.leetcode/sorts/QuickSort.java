@@ -2,9 +2,6 @@ package com.seky.leetcode.sorts;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
-import java.util.stream.Collectors;
-
 /**
  * @author: feiwang_6
  * @create: 2020/9/16 22:24
@@ -16,7 +13,7 @@ public class QuickSort {
     public void test(){
         int[] tag = new int[]{9, 10, 3, 1, 8, 2, 6, 7, 2, 5, 4, 0};
         QuickSort(tag);
-        System.out.println(Arrays.stream(tag).boxed().collect(Collectors.toList()));
+        //System.out.println(Arrays.stream(tag).boxed().collect(Collectors.toList()));
     }
     
     /**
