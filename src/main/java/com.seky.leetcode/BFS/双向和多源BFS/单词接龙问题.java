@@ -95,4 +95,10 @@ public class 单词接龙问题 {
         }
         return tag == 1 ? true : false;
     }
+    
+    public static void main(String[] args) {
+        ArrayList<Integer> list = new ArrayList<>(Arrays.asList(1, 2, 3, 4));
+        List<Integer> integers = list.subList(0, 2);
+        integers.size();
+    }
 }
