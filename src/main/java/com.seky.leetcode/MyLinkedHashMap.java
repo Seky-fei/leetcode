@@ -16,6 +16,11 @@ public class MyLinkedHashMap<K, V> extends LinkedHashMap<K, V> {
         super(MAXIMUM_CAPACITY, DEFAULT_LOAD_FACTOR, true);
     }
     
+    /**
+     * 当map中元素个数大于指定容量后，删除对头节点
+     * @param eldest
+     * @return
+     */
     @Override
     protected boolean removeEldestEntry(Map.Entry<K, V> eldest) {
         if (this.size() > MAXIMUM_CAPACITY) {
@@ -25,8 +30,5 @@ public class MyLinkedHashMap<K, V> extends LinkedHashMap<K, V> {
     }
     
     public static void main(String[] args) {
-        int len = 4;
-        System.out.println(18 % len);
-        System.out.println(18 & (len-1));
     }
 }
