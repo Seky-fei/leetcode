@@ -1,4 +1,4 @@
-package com.seky.leetcode;
+package com.seky.leetcode.utils;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -27,8 +27,5 @@ public class MyLinkedHashMap<K, V> extends LinkedHashMap<K, V> {
             return true;
         }
         return false;
-    }
-    
-    public static void main(String[] args) {
     }
 }

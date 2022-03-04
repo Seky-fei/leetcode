@@ -1,4 +1,4 @@
-package com.seky.leetcode;
+package com.seky.leetcode.utils;
 
 import cn.hutool.core.util.CharsetUtil;
 import cn.hutool.core.util.StrUtil;
