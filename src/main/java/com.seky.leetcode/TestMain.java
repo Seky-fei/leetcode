@@ -5,11 +5,12 @@ import org.junit.jupiter.api.Test;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.concurrent.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
@@ -255,14 +256,34 @@ public class TestMain {
     
     
     public static void main(String[] args) throws Exception {
-        LinkedHashMap<Integer, Integer> linkedHashMap = new LinkedHashMap<Integer, Integer>(16, 0.75f, true);
-        linkedHashMap.put(21, 21);
-        linkedHashMap.put(1, 1);
-        linkedHashMap.put(3, 3);
-        linkedHashMap.put(30, 30);
-        System.out.println(linkedHashMap);
+        TreeMap<Integer, Integer> treeMap = new TreeMap<>();
+        treeMap.put(10, 100);
+        treeMap.put(3, 3);
+        treeMap.put(1, 1);
+        treeMap.put(2, 2);
+        treeMap.put(4, 4);
+    
+        System.out.println(treeMap);
+        Map.Entry<Integer, Integer> firstEntry = treeMap.firstEntry();
+        SortedMap<Integer, Integer> subTreeMap = treeMap.tailMap(4);
+        System.out.println(subTreeMap);
         
-        linkedHashMap.get(3);
-        System.out.println(linkedHashMap);
+        System.out.println("====================");
+        System.out.println(treeMap.floorEntry(1));
+        System.out.println(treeMap.lowerEntry(1));
+        System.out.println(treeMap.ceilingEntry(10));
+        System.out.println(treeMap.higherEntry(10));
     }
+    
+    @Test
+    public void phantomReference(){
+        ThreadLocal<Integer> local1 = new ThreadLocal<>();
+        
+        //local1.set(10);
+        Integer integer = local1.get();
+        System.out.println(integer);
+        local1.remove();
+    }
+    
+    private static final ThreadLocal<DateFormat> df = ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyy-MM-dd"));
 }
