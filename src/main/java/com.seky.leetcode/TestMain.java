@@ -5,10 +5,11 @@ import org.junit.jupiter.api.Test;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Exchanger;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -29,10 +30,10 @@ public class TestMain {
     int index = 0;
     Integer[] queue = new Integer[10];
     
-    public void addElement(Integer element){
+    public void addElement(Integer element) {
         try {
             lock.lock();
-            if(index == queue.length){
+            if (index == queue.length) {
                 removeCondition.signalAll();
                 removeCondition.signal();
                 addCondition.await();
@@ -42,15 +43,15 @@ public class TestMain {
             index++;
         } catch (Exception e) {
             e.printStackTrace();
-        }finally {
+        } finally {
             lock.unlock();
         }
     }
     
-    public void removeElement(){
+    public void removeElement() {
         try {
             lock.lock();
-            if(index == 0){
+            if (index == 0) {
                 addCondition.signal();
                 removeCondition.await();
             }
@@ -58,7 +59,7 @@ public class TestMain {
             System.out.println("删除元素：" + index + " " + element);
         } catch (Exception e) {
             e.printStackTrace();
-        }finally {
+        } finally {
             lock.unlock();
         }
     }
@@ -67,13 +68,13 @@ public class TestMain {
     @Test
     public void testReadWriteLock() throws InterruptedException {
         new Thread(() -> {
-            for(int i = 1; i <= 100; i++){
+            for (int i = 1; i <= 100; i++) {
                 addElement(i);
             }
         }).start();
-    
+        
         new Thread(() -> {
-            for(int i = 1; i <= 100; i++){
+            for (int i = 1; i <= 100; i++) {
                 removeElement();
             }
         }).start();
@@ -256,27 +257,29 @@ public class TestMain {
     
     
     public static void main(String[] args) throws Exception {
-        TreeMap<Integer, Integer> treeMap = new TreeMap<>();
-        treeMap.put(10, 100);
-        treeMap.put(3, 3);
-        treeMap.put(1, 1);
-        treeMap.put(2, 2);
-        treeMap.put(4, 4);
-    
-        System.out.println(treeMap);
-        Map.Entry<Integer, Integer> firstEntry = treeMap.firstEntry();
-        SortedMap<Integer, Integer> subTreeMap = treeMap.tailMap(4);
-        System.out.println(subTreeMap);
+        Exchanger<String> exchanger = new Exchanger();
         
-        System.out.println("====================");
-        System.out.println(treeMap.floorEntry(1));
-        System.out.println(treeMap.lowerEntry(1));
-        System.out.println(treeMap.ceilingEntry(10));
-        System.out.println(treeMap.higherEntry(10));
+        
+        Runnable runnable = () -> {
+            try {
+                Thread thread = Thread.currentThread();
+                String exchange = exchanger.exchange(thread.getName());
+                System.out.println(thread.getName() + " "  +exchange);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        };
+        
+        Thread t1 = new Thread(runnable);
+        Thread t2 = new Thread(runnable);
+        Thread t3 = new Thread(runnable);
+        t1.start();
+        t2.start();
+        t3.start();
     }
     
     @Test
-    public void phantomReference(){
+    public void phantomReference() {
         ThreadLocal<Integer> local1 = new ThreadLocal<>();
         
         //local1.set(10);
@@ -284,6 +287,4 @@ public class TestMain {
         System.out.println(integer);
         local1.remove();
     }
-    
-    private static final ThreadLocal<DateFormat> df = ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyy-MM-dd"));
 }
