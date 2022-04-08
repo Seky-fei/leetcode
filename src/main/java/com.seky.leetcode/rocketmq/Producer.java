@@ -85,7 +85,7 @@ public class Producer {
         //设置NameServer的地址
         producer.setNamesrvAddr("192.168.33.1:9876;192.168.33.2:9876");
         producer.start();
-        for(int i = 1; i <= 2; i++){
+        for(int i = 1; i <= 20; i++){
             Message msg = new Message("test_topic", "TagC", ("发送单向消息" + i).getBytes(RemotingHelper.DEFAULT_CHARSET));
             //发送单向消息，没有任何返回值
             producer.sendOneway(msg);

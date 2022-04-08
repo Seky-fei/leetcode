@@ -3,10 +3,8 @@ package com.seky.leetcode.rocketmq;
 import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
 import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
 import org.apache.rocketmq.client.consumer.listener.MessageListenerConcurrently;
-import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.common.message.MessageExt;
 import org.apache.rocketmq.common.protocol.heartbeat.MessageModel;
-import org.junit.jupiter.api.Test;
 
 /**
  * @author: wf
@@ -18,8 +16,7 @@ public class Consumer {
     /**
      * 负载均衡消费模式
      */
-    @Test
-    public void clusterConsume() throws Exception {
+    public static void clusterConsume() throws Exception {
         // 实例化消息生产者,指定组名
         DefaultMQPushConsumer consumer = new DefaultMQPushConsumer("group1");
         // 指定Namesrv地址信息
@@ -43,7 +40,11 @@ public class Consumer {
         System.out.println("Consumer Started。。。。");
     }
     
-    public static void main(String[] args) throws MQClientException {
+    /**
+     * 广播模式消费
+     * @throws Exception
+     */
+    public static void broadConsume() throws Exception {
         //创建消费者，并指定groupName
         DefaultMQPushConsumer consumer = new DefaultMQPushConsumer("group1");
         consumer.setNamesrvAddr("192.168.33.1:9876;192.168.33.2:9876");
@@ -54,8 +55,8 @@ public class Consumer {
         //注册回调函数，处理消息
         consumer.registerMessageListener((MessageListenerConcurrently)(msgs, context) -> {
             for(MessageExt ext : msgs){
-                String msgId = ext.getMsgId();
                 long timestamp = ext.getBornTimestamp();
+                String msgId = ext.getMsgId();
                 String body = new String(ext.getBody());
                 System.out.println(msgId + "  " + timestamp + "  " + body);
             }
@@ -64,5 +65,10 @@ public class Consumer {
         //启动消费者
         consumer.start();
         System.out.println("consumer start success。。。。。");
+    }
+    
+    public static void main(String[] args) throws Exception {
+        //集群模式消费
+        clusterConsume();
     }
 }
