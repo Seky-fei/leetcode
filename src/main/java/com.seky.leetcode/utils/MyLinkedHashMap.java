@@ -1,4 +1,4 @@
-package com.seky.leetcode;
+package com.seky.leetcode.utils;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -16,17 +16,16 @@ public class MyLinkedHashMap<K, V> extends LinkedHashMap<K, V> {
         super(MAXIMUM_CAPACITY, DEFAULT_LOAD_FACTOR, true);
     }
     
+    /**
+     * 当map中元素个数大于指定容量后，删除对头节点
+     * @param eldest
+     * @return
+     */
     @Override
     protected boolean removeEldestEntry(Map.Entry<K, V> eldest) {
         if (this.size() > MAXIMUM_CAPACITY) {
             return true;
         }
         return false;
-    }
-    
-    public static void main(String[] args) {
-        int len = 4;
-        System.out.println(18 % len);
-        System.out.println(18 & (len-1));
     }
 }
