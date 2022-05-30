@@ -30,12 +30,12 @@ public class Producer {
         DefaultMQProducer producer = new DefaultMQProducer(producerGroup);
         //2.设置NameServer的地址
         producer.setNamesrvAddr("192.168.33.1:9876;192.168.33.2:9876");
-        
-        producer.setMaxMessageSize(1024 * 1024 * 6);
+        //设置消息的大小(默认4M)
+        //producer.setMaxMessageSize(1024 * 1024 * 6);
         
         //3.启动Producer实例
         producer.start();
-        for (int i = 1; i <= 10; i++) {
+        for (int i = 1; i <= 100; i++) {
             //4.创建消息，并指定Topic，Tag和消息体
             Message msg = new Message("test_topic", "TagA", ("发送同步消息 " + i).getBytes(RemotingHelper.DEFAULT_CHARSET));
             //发送消息到一个Broker
@@ -268,7 +268,7 @@ public class Producer {
     
     public static void main(String[] args) throws Exception {
         //发送同步消息
-        //syncProducer();
+        syncProducer();
         
         //发送顺序消息
         //orderMsgProducer();
@@ -283,6 +283,6 @@ public class Producer {
         //sendUserPropertyMsg();
     
         //事务消息
-        sendTransactionMsg();   
+        // sendTransactionMsg();   
     }
 }
