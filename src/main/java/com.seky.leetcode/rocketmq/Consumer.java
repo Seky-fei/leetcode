@@ -25,17 +25,20 @@ public class Consumer {
         // 指定Namesrv地址信息
         consumer.setNamesrvAddr("192.168.33.1:9876;192.168.33.2:9876");
         // 订阅Topic，消费所有tags(可以用tag过滤消息)
+        //consumer.subscribe("test_topic", "*");
         consumer.subscribe("test_topic", "*");
         //默认就是负载均衡模式消费
         //consumer.setMessageModel(MessageModel.CLUSTERING);
+        
         // 注册回调函数，处理消息clusterConsumer
         consumer.registerMessageListener((MessageListenerConcurrently) (msgs, context) -> {
             for (MessageExt ext : msgs) {
+                String topic = ext.getTopic();
                 String threadName = Thread.currentThread().getName();
                 String msgId = ext.getMsgId();
                 int queueId = ext.getQueueId();
                 String body = new String(ext.getBody());
-                System.out.println(threadName + " " + queueId + "  " + msgId + "  " + body);
+                System.out.println(topic + "  " +threadName + " " + queueId + "  " + msgId + "  " + body);
             }
             return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
         });
@@ -124,7 +127,7 @@ public class Consumer {
     
     public static void main(String[] args) throws Exception {
         //集群模式消费
-        //clusterConsume();
+        clusterConsume();
         
         //广播模式消费消息
         //broadConsume();
