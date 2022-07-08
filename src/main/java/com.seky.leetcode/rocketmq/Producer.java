@@ -29,14 +29,13 @@ public class Producer {
         //1.实例化消息生产者Producer,指定groupName
         DefaultMQProducer producer = new DefaultMQProducer(producerGroup);
         //2.设置NameServer的地址
-        producer.setNamesrvAddr("192.168.33.1:9876;192.168.33.2:9876");
-        //producer.setNamesrvAddr("10.30.130.105:9876");
+        producer.setNamesrvAddr("10.30.130.127:9876");
         //设置消息的大小(默认4M)
         //producer.setMaxMessageSize(1024 * 1024 * 6);
         
         //3.启动Producer实例
         producer.start();
-        for (int i = 1; i <= 100; i++) {
+        for (int i = 1; i <= 10; i++) {
             //4.创建消息，并指定Topic，Tag和消息体
             Message msg = new Message("test_topic", "TagA", ("发送同步消息2 " + i).getBytes(RemotingHelper.DEFAULT_CHARSET));
             //发送消息到一个Broker
@@ -152,7 +151,7 @@ public class Producer {
     public static void delayMsgProducer() throws Exception {
         //初始化生产者
         DefaultMQProducer producer = new DefaultMQProducer("delay_product_group");
-        producer.setNamesrvAddr("192.168.33.1:9876;192.168.33.2:9876");
+        producer.setNamesrvAddr("10.30.130.127:9876");
         producer.start();
         //发送延迟消息
         for (int i = 0; i < 5; i++) {
@@ -161,7 +160,8 @@ public class Producer {
             //设置延时等级3,这个消息将在10s之后发送(现在只支持固定的几个时间,详看delayTimeLevel)
             message.setDelayTimeLevel(3);
             //发送消息
-            producer.send(message);
+            SendResult result = producer.send(message);
+            System.out.println(result);
         }
         //关闭生产者
         producer.shutdown();

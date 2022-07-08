@@ -10,6 +10,8 @@ import org.apache.rocketmq.common.consumer.ConsumeFromWhere;
 import org.apache.rocketmq.common.message.MessageExt;
 import org.apache.rocketmq.common.protocol.heartbeat.MessageModel;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 /**
  * @author: wf
  * @create: 2022/4/7 16:05
@@ -24,29 +26,37 @@ public class Consumer {
         // 实例化消息生产者,指定组名
         DefaultMQPushConsumer consumer = new DefaultMQPushConsumer("group1");
         // 指定Namesrv地址信息
-        consumer.setNamesrvAddr("192.168.33.1:9876;192.168.33.2:9876");
+        consumer.setNamesrvAddr("10.30.30.64:9876;10.30.151.209:9876;10.30.176.225:9876;10.30.30.67:9876");
         // 订阅Topic，消费所有tags(可以用tag过滤消息)
         //consumer.subscribe("test_topic", "*");
         consumer.subscribe("test_topic", "*");
         //默认就是负载均衡模式消费
         //consumer.setMessageModel(MessageModel.CLUSTERING);
         
-        //新消费组消费位置，好像没有用
+        //新消费组消费位置，好像不会生效
         //CONSUME_FROM_FIRST_OFFSET: 
         //CONSUME_FROM_LAST_OFFSET: 
         //CONSUME_FROM_TIMESTAMP: 
-        consumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_LAST_OFFSET);
+        consumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_TIMESTAMP);
+        long consumeTimestamp = System.currentTimeMillis();
+        consumer.setConsumeTimestamp(String.valueOf(consumeTimestamp));
         
         
         // 注册回调函数，处理消息clusterConsumer
+        int maxDiffer = 1000;
         consumer.registerMessageListener((MessageListenerConcurrently) (msgs, context) -> {
             for (MessageExt ext : msgs) {
-                String topic = ext.getTopic();
+                long queueOffset = ext.getQueueOffset();
+                long maxOffset = Long.valueOf(ext.getProperties().get(MessageConst.PROPERTY_MAX_OFFSET));
+                //offset和MAX_OFFSET相差很远,跳过积压的消息
+                if(queueOffset + maxDiffer < maxOffset){
+                    return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
+                }
                 String threadName = Thread.currentThread().getName();
                 String msgId = ext.getMsgId();
                 int queueId = ext.getQueueId();
                 String body = new String(ext.getBody());
-                System.out.println(topic + "  " +threadName + " " + queueId + "  " + msgId + "  " + body);
+                System.out.println(threadName + " " + queueId + "  " + msgId + "  " + body + "  " +(consumeTimestamp - ext.getStoreTimestamp()));
             }
             return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
         });
@@ -132,10 +142,44 @@ public class Consumer {
         consumer.start();
         System.out.println("消费者启动成功！！！");
     }
+
+    /**
+     * 设置消息重试次数
+     * @throws Exception
+     */
+    public static void retryConsumer() throws Exception {
+        DefaultMQPushConsumer consumer = new DefaultMQPushConsumer("group1");
+        consumer.setNamesrvAddr("10.30.30.64:9876");
+        consumer.subscribe("test_topic", "*");
+        AtomicLong consumerTime = new AtomicLong();
+        consumer.registerMessageListener((MessageListenerConcurrently) (msgs, context) -> {
+            consumerTime.set(System.currentTimeMillis());
+            int retry = 0;
+            try {
+                for (MessageExt msg : msgs) {
+                    String body = new String(msg.getBody());
+                    retry = msg.getReconsumeTimes();
+                    System.out.println(body + " retry = " + retry);
+                }
+                int n = 100 /0;
+                return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
+            } catch (Exception e) {
+                if(retry >= 2){
+                    System.out.println("消息重试次数超过2次！！currentTimeMillis = " + consumerTime.get());
+                    return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
+                }
+                System.out.println("消费失败！" + consumerTime.get());
+                return ConsumeConcurrentlyStatus.RECONSUME_LATER;
+            }
+        });
+        consumer.start();
+        System.out.println("消费者启动成功！！！");
+    }
+    
     
     public static void main(String[] args) throws Exception {
         //集群模式消费
-        clusterConsume();
+        //clusterConsume();
         
         //广播模式消费消息
         //broadConsume();
@@ -145,5 +189,8 @@ public class Consumer {
         
         //sql表达式过滤消息
         //consumerInSql();
+        
+        //消息重试
+        retryConsumer();
     }
 }
