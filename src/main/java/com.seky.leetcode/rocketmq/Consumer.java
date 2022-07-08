@@ -6,6 +6,7 @@ import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
 import org.apache.rocketmq.client.consumer.listener.ConsumeOrderlyStatus;
 import org.apache.rocketmq.client.consumer.listener.MessageListenerConcurrently;
 import org.apache.rocketmq.client.consumer.listener.MessageListenerOrderly;
+import org.apache.rocketmq.common.consumer.ConsumeFromWhere;
 import org.apache.rocketmq.common.message.MessageExt;
 import org.apache.rocketmq.common.protocol.heartbeat.MessageModel;
 
@@ -30,6 +31,13 @@ public class Consumer {
         //默认就是负载均衡模式消费
         //consumer.setMessageModel(MessageModel.CLUSTERING);
         
+        //新消费组消费位置，好像没有用
+        //CONSUME_FROM_FIRST_OFFSET: 
+        //CONSUME_FROM_LAST_OFFSET: 
+        //CONSUME_FROM_TIMESTAMP: 
+        consumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_LAST_OFFSET);
+        
+        
         // 注册回调函数，处理消息clusterConsumer
         consumer.registerMessageListener((MessageListenerConcurrently) (msgs, context) -> {
             for (MessageExt ext : msgs) {
@@ -46,7 +54,7 @@ public class Consumer {
         consumer.start();
         System.out.println("Consumer Started。。。。");
     }
-    
+     
     /**
      * 广播模式消费
      * @throws Exception
