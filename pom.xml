@@ -93,6 +93,19 @@
             </exclusions>
         </dependency>
 
+        <!--guava-->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>22.0</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>io.projectreactor</groupId>
+            <artifactId>reactor-core</artifactId>
+            <version>3.2.3.RELEASE</version>
+        </dependency>
+
     </dependencies>
     <build>
         <plugins>

@@ -39,7 +39,6 @@ public class Producer {
             //4.创建消息，并指定Topic，Tag和消息体
             Message msg = new Message("test_topic", "TagA", ("发送同步消息2 " + i).getBytes(RemotingHelper.DEFAULT_CHARSET));
             //发送消息到一个Broker
-            
             SendResult sendResult = producer.send(msg);
             //通过sendResult返回消息是否成功送达
             System.out.printf("%s%n", sendResult);
@@ -287,6 +286,5 @@ public class Producer {
     
         //事务消息
         //sendTransactionMsg();   
-        // sendTransactionMsg();   
     }
 }

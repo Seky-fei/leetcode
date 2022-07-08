@@ -1,7 +1,7 @@
-package com.igetcool.base.commons.mq;
+package com.seky.leetcode.rocketmq.mq;
 
-import com.alibaba.rocketmq.common.message.MessageExt;
 import lombok.Getter;
+import org.apache.rocketmq.common.message.MessageExt;
 
 /**
  * @author: wf

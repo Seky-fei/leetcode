@@ -1,4 +1,4 @@
-package com.igetcool.base.commons.mq;
+package com.seky.leetcode.rocketmq.mq;
 
 /**
  * @author: wf

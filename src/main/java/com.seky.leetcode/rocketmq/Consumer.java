@@ -1,15 +1,20 @@
 package com.seky.leetcode.rocketmq;
 
+import com.google.common.collect.Lists;
 import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
 import org.apache.rocketmq.client.consumer.MessageSelector;
 import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
 import org.apache.rocketmq.client.consumer.listener.ConsumeOrderlyStatus;
 import org.apache.rocketmq.client.consumer.listener.MessageListenerConcurrently;
 import org.apache.rocketmq.client.consumer.listener.MessageListenerOrderly;
+import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.common.consumer.ConsumeFromWhere;
+import org.apache.rocketmq.common.message.MessageConst;
 import org.apache.rocketmq.common.message.MessageExt;
 import org.apache.rocketmq.common.protocol.heartbeat.MessageModel;
 
+import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -31,7 +36,7 @@ public class Consumer {
         //consumer.subscribe("test_topic", "*");
         consumer.subscribe("test_topic", "*");
         //默认就是负载均衡模式消费
-        //consumer.setMessageModel(MessageModel.CLUSTERING);
+        consumer.setMessageModel(MessageModel.CLUSTERING);
         
         //新消费组消费位置，好像不会生效
         //CONSUME_FROM_FIRST_OFFSET: 
@@ -177,7 +182,36 @@ public class Consumer {
     }
     
     
+    /**
+     * 一个消费者监听多个topic
+     */
+    public static void consumerTopics() throws MQClientException {
+        List<String> topicList = Lists.newArrayList("test_topic_one", "test_topic_two", "test_topic");
+        String groupName = "test_group";
+        String nameSrvAddr = "10.30.130.105:9876";
+        DefaultMQPushConsumer consumer = new DefaultMQPushConsumer(groupName);
+        consumer.setNamesrvAddr(nameSrvAddr);
+        
+        //订阅多个topic
+        Iterator<String> ite = topicList.iterator();
+        while (ite.hasNext()){
+            consumer.subscribe(ite.next(), "*");
+        }
+        consumer.registerMessageListener((MessageListenerConcurrently) (msgs, context) -> {
+            String topic = context.getMessageQueue().getTopic();
+            for (MessageExt msg : msgs) {
+                String body = new String(msg.getBody());
+                System.out.println(topic + "   " + body);
+            }
+            return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
+        });
+        consumer.start();
+    }
+    
     public static void main(String[] args) throws Exception {
+        //一个consumer订阅多个topic
+        consumerTopics();
+        
         //集群模式消费
         //clusterConsume();
         
@@ -192,5 +226,9 @@ public class Consumer {
         
         //消息重试
         retryConsumer();
+        
+        
     }
+    
+    
 }
