@@ -3,6 +3,8 @@ package com.seky.leetcode.rocketmq.mq;
 import lombok.Getter;
 import org.apache.rocketmq.common.message.MessageExt;
 
+import javax.annotation.PostConstruct;
+
 /**
  * @author: wf
  * @create: 2020/12/8 15:43
@@ -16,8 +18,9 @@ public abstract class ConsumerMessage {
     protected String groupName;
     
     /**
-     * 初始化topic和groupName
+     * 初始化topic和groupName (需要验证  @PostConstruct生不生效)
      */
+    @PostConstruct
     public abstract void initConsumerMsg();
     
     /**
