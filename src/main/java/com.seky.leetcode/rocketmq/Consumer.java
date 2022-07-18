@@ -29,9 +29,9 @@ public class Consumer {
      */
     public static void clusterConsume() throws Exception {
         // 实例化消息生产者,指定组名
-        DefaultMQPushConsumer consumer = new DefaultMQPushConsumer("group1");
+        DefaultMQPushConsumer consumer = new DefaultMQPushConsumer("group_test");
         // 指定Namesrv地址信息
-        consumer.setNamesrvAddr("10.30.30.64:9876;10.30.151.209:9876;10.30.176.225:9876;10.30.30.67:9876");
+        consumer.setNamesrvAddr("10.30.130.105:9876");
         // 订阅Topic，消费所有tags(可以用tag过滤消息)
         //consumer.subscribe("test_topic", "*");
         consumer.subscribe("test_topic", "*");
@@ -199,6 +199,7 @@ public class Consumer {
         }
         consumer.registerMessageListener((MessageListenerConcurrently) (msgs, context) -> {
             String topic = context.getMessageQueue().getTopic();
+            System.out.println("topic信息: " + topic);
             for (MessageExt msg : msgs) {
                 String body = new String(msg.getBody());
                 System.out.println(topic + "   " + body);
@@ -225,7 +226,7 @@ public class Consumer {
         //consumerInSql();
         
         //消息重试
-        retryConsumer();
+        //retryConsumer();
         
         
     }
