@@ -3,16 +3,15 @@ package com.seky.leetcode.rocketmq;
 import com.google.common.collect.Lists;
 import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
 import org.apache.rocketmq.client.consumer.MessageSelector;
-import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
-import org.apache.rocketmq.client.consumer.listener.ConsumeOrderlyStatus;
-import org.apache.rocketmq.client.consumer.listener.MessageListenerConcurrently;
-import org.apache.rocketmq.client.consumer.listener.MessageListenerOrderly;
+import org.apache.rocketmq.client.consumer.listener.*;
 import org.apache.rocketmq.client.exception.MQClientException;
+import org.apache.rocketmq.common.MixAll;
 import org.apache.rocketmq.common.consumer.ConsumeFromWhere;
 import org.apache.rocketmq.common.message.MessageConst;
 import org.apache.rocketmq.common.message.MessageExt;
 import org.apache.rocketmq.common.protocol.heartbeat.MessageModel;
 
+import java.io.File;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
@@ -29,9 +28,9 @@ public class Consumer {
      */
     public static void clusterConsume() throws Exception {
         // 实例化消息生产者,指定组名
-        DefaultMQPushConsumer consumer = new DefaultMQPushConsumer("group_test");
+        DefaultMQPushConsumer consumer = new DefaultMQPushConsumer("group1");
         // 指定Namesrv地址信息
-        consumer.setNamesrvAddr("10.30.130.105:9876");
+        consumer.setNamesrvAddr("192.168.33.1:9876");
         // 订阅Topic，消费所有tags(可以用tag过滤消息)
         //consumer.subscribe("test_topic", "*");
         consumer.subscribe("test_topic", "*");
@@ -129,18 +128,63 @@ public class Consumer {
     }
     
     /**
+     *  tag过来消息
+     */
+    public static void consumerByTagFilter() throws MQClientException {
+        DefaultMQPushConsumer consumer = new DefaultMQPushConsumer("test_group");
+        consumer.setNamesrvAddr("10.30.130.105:9876");
+        consumer.subscribe("test_topic", "TagA || TagB");
+        consumer.registerMessageListener((MessageListenerConcurrently) (msgs, context) -> {
+            for (MessageExt msg : msgs) {
+                String tags = msg.getTags();
+                System.out.println(tags + "   " + new String(msg.getBody()));
+            }
+            return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
+        });
+        consumer.start();
+    } 
+    
+    /**
      * sql表达式过滤消息
      * @throws Exception
      */
-    public static void consumerInSql() throws Exception {
-        DefaultMQPushConsumer consumer = new DefaultMQPushConsumer("group1");
-        consumer.setNamesrvAddr("192.168.33.1:9876;192.168.33.2:9876");
-        consumer.subscribe("test_topic", MessageSelector.bySql("userId BETWEEN 0 AND 2"));
+    public static void consumerBySqlFilter() throws Exception {
+        DefaultMQPushConsumer consumer = new DefaultMQPushConsumer("group");
+        consumer.setNamesrvAddr("127.0.0.1:9876");
+        //tag + userId属性过滤(注意TAGS要大写才能识别)
+        String sql = "(TAGS is not null and TAGS in ('TagA', 'TagB')) and (userId is not null and userId between 3 and 5)";
+        consumer.subscribe("test_topic", MessageSelector.bySql(sql));
         consumer.registerMessageListener((MessageListenerConcurrently) (msgs, context) -> {
             for (MessageExt msg : msgs) {
+                String userId = msg.getUserProperty("userId");
                 String body = new String(msg.getBody());
                 String tags = msg.getTags();
-                System.out.println(tags + "   " + body);
+                System.out.println(tags + "   userId=" + userId + " " + body);
+            }
+            return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
+        });
+        consumer.start();
+        System.out.println("消费者启动成功！！！");
+    }
+    
+    /**
+     * 自定义类过滤消息：需要启动FilterServer过滤服务(在RocketMQ 4.3.0中去掉这种方式)
+     */
+    public static void consumerByClassFilter() throws Exception {
+        DefaultMQPushConsumer consumer = new DefaultMQPushConsumer("group1");
+        consumer.setNamesrvAddr("127.0.0.1:9876");
+    
+        //File classFile = new File("D:/Java/idea-pro/seky/leetcode/src/main/java/com.seky.leetcode/rocketmq/MyMessageFilterImpl.java");
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        File classFile = new File(classLoader.getResource("MyMessageFilterImpl.java").getFile());
+        String filterCode = MixAll.file2String(classFile);
+        consumer.subscribe("test_topic", "com.seky.leetcode.rocketmq.MyMessageFilterImpl", filterCode);
+        
+        consumer.registerMessageListener((MessageListenerConcurrently) (msgs, context) -> {
+            for(MessageExt msg : msgs){
+                String userId = msg.getUserProperty("userId");
+                String tags = msg.getTags();
+                System.out.println(tags + " userId=" + " " + userId + "  "+ new String(msg.getBody()));
             }
             return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
         });
@@ -211,10 +255,10 @@ public class Consumer {
     
     public static void main(String[] args) throws Exception {
         //一个consumer订阅多个topic
-        consumerTopics();
+        //consumerTopics();
         
         //集群模式消费
-        //clusterConsume();
+        clusterConsume();
         
         //广播模式消费消息
         //broadConsume();
@@ -222,13 +266,17 @@ public class Consumer {
         //顺序消费
         //consumerInOrder();
         
+        //tag过滤数据
+        //consumerByTagFilter();
+        
         //sql表达式过滤消息
-        //consumerInSql();
+        //consumerBySqlFilter();
+    
+        //类过滤模式
+        //consumerByClassFilter();
         
         //消息重试
         //retryConsumer();
-        
-        
     }
     
     
