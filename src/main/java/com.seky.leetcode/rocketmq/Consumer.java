@@ -65,7 +65,7 @@ public class Consumer {
     }
      
     /**
-     * 广播模式消费
+     * 广播模式消费: groupName的消费进度只保存在客户端
      * @throws Exception
      */
     public static void broadConsume() throws Exception {
