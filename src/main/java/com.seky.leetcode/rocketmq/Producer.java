@@ -8,7 +8,6 @@ import org.apache.rocketmq.common.message.MessageQueue;
 import org.apache.rocketmq.remoting.common.RemotingHelper;
 import org.junit.jupiter.api.Test;
 
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,31 +28,27 @@ public class Producer {
         //1.实例化消息生产者Producer,指定groupName
         DefaultMQProducer producer = new DefaultMQProducer(producerGroup);
         //2.设置NameServer的地址
-        producer.setNamesrvAddr("10.30.130.127:9876");
+        producer.setNamesrvAddr("192.168.33.1:9876");
         //设置消息的大小(默认4M)
         //producer.setMaxMessageSize(1024 * 1024 * 6);
         
         //3.启动Producer实例
         producer.start();
-        for (int i = 1; i <= 10; i++) {
-            //4.创建消息，并指定Topic，Tag和消息体
-            Message msg = new Message("test_topic", "TagA", ("发送同步消息 " + i).getBytes(RemotingHelper.DEFAULT_CHARSET));
-            //发送消息到一个Broker
-            SendResult sendResult = producer.send(msg);
-            //通过sendResult返回消息是否成功送达
-            System.out.printf("%s%n", sendResult);
+        //4.创建消息，并指定Topic，Tag和消息体
+        String[] tags = new String[]{"TagA", "TagB", "TagC"};
+        for (int n = 1; n <= 5; n++){
+            for(String tag : tags){
+                Message message = new Message("test_topic", tag, "这是一个SS公司".getBytes("UTF-8"));
+                //设置消息的属性，可以设置多个属性
+                message.putUserProperty("userId", String.valueOf(n));
+                //发送消息到一个Broker
+                SendResult send = producer.send(message);
+                //通过sendResult返回消息是否成功送达
+                System.out.println(send);
+            }
         }
         //如果不再发送消息，关闭Producer实例
         producer.shutdown();
-    }
-    
-    private static byte[] getByteBody() throws UnsupportedEncodingException {
-        byte[] bytes1 = "发送消息：哈啊哈哈".getBytes("UTF-8");
-        byte[] bytes2 = new byte[1024 * 1024 * 1];
-        byte[] data = new byte[bytes1.length + bytes2.length];
-        System.arraycopy(bytes1, 0, data, 0, bytes1.length);
-        System.arraycopy(bytes2, 0, data, bytes1.length, bytes2.length);
-        return data;
     }
     
     /**
@@ -284,6 +279,6 @@ public class Producer {
         //sendUserPropertyMsg();
     
         //事务消息
-        // sendTransactionMsg();   
+        //sendTransactionMsg();   
     }
 }
