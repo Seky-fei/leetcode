@@ -1,10 +1,9 @@
 package com.seky.leetcode.entry;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-
-import java.util.*;
-import java.util.stream.Collectors;
+import lombok.NoArgsConstructor;
 
 /**
  * @author: wf
@@ -13,6 +12,8 @@ import java.util.stream.Collectors;
  */
 @Data
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Student {
     private Long id;
     /**
@@ -29,12 +30,23 @@ public class Student {
      */
     private double score;
     
-    public Student(Long id, Integer age, Long classId, double score) {
+    public void say(String temp){
+        System.out.println("执行了say()方法, 入参 temp = " + temp);
+    }
+
+    public static void main(String[] args) {
+        Student student = new Student();
+        student.say("1111");
+    }
+    
+/*    public Student(Long id, Integer age, Long classId, double score) {
         this.id = id;
         this.age = age;
         this.classId = classId;
         this.score = score;
     }
+    
+    
     
     public static void main(String[] args) {
         List<Student> list = new ArrayList<>();
@@ -69,5 +81,5 @@ public class Student {
         TreeMap<Integer, Student> collect4 = list.stream().collect(Collectors.toMap(f -> f.getAge(), f -> f, (k1, k2) -> k1.getId() >= k2.getId() ? k1 : k2, TreeMap::new));
         System.out.println(collect4);
     
-    }
+    }*/
 }
